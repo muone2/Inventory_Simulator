@@ -4,33 +4,33 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField] float moveSpeed = 1.0f;
-    [SerializeField] float Vertical = 0.0f;
-    [SerializeField] float Horizontal = 0.0f;
 
+    [SerializeField] float moveSpeed = 10.0f;
+    [SerializeField] float turnSpeed = 5.0f;
+    [SerializeField] bool moveBool = true;
 
-    private void Walk()
+    public void changeMoveBool(bool a)
     {
-
-
-
-
+        moveBool = a;
+    }
+    public void CallMove(Vector3 front, float vertical, float horizontal, Rigidbody rigid) {
+        if (moveBool == true)
+        {
+            Walk(front, vertical, rigid);
+            Turn(horizontal);
+        }
     }
 
-
-
-
-
-
-    // Start is called before the first frame update
-    void Start()
+    private void Walk(Vector3 frontVec, float verticalValue, Rigidbody p_rigid)
     {
-        
+        Vector3 r = frontVec * verticalValue * moveSpeed;
+        r.y = p_rigid.velocity.y;
+
+        p_rigid.velocity = r;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Turn(float horizontalValue)
     {
-        
+        transform.Rotate(0, horizontalValue * turnSpeed, 0);
     }
 }
