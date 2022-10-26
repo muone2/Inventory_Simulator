@@ -7,17 +7,6 @@ public class Inventory : MonoBehaviour
     [SerializeField] List<ItemInfo> ListInInventory = new List<ItemInfo>(); //40칸 미리 만들어서 시작하자. 일단 거의 null이겠지만.
     [SerializeField] List<int> Count = new List<int>();
 
-    private void Update() //임시로 아이템이 각 칸에 몇 개인지 확인하기 위한 구문
-    {
-        for (int i = 0; i < Count.Count; i++)
-        {
-            if (ListInInventory[i] != null)
-                Count[i] = ListInInventory[i].GetItemCount();
-            else
-                Count[i] = 0;
-        }
-    }
-
     public void GetItem(GameObject item)
     {
         if (item.GetComponent<ItemInfo>() != null)

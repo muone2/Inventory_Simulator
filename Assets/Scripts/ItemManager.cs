@@ -8,6 +8,10 @@ public class ItemManager : MonoBehaviour
     [SerializeField] List<GameObject> SpawnPos = new List<GameObject>();
     public Inventory a;
 
+    [SerializeField] float rate = 0f;
+    [SerializeField] float spawnCoolTime = 5f;
+
+
     private void Start()
     {
         for (int i = 0; i < item.Count; i++) {
@@ -19,17 +23,18 @@ public class ItemManager : MonoBehaviour
         } //즉 모두 item스크립트를 가지고 있음.
     }
 
-    //임시 스폰 버튼. g로 작동, h에는 가방에 아이템 넣기가 임시로...
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.G))
-            CallSapwnItem(1);
-        if (Input.GetKeyDown(KeyCode.H))
-            a.GetItem(Instantiate(item[Random.Range(0, item.Count)]));
+        rate += Time.deltaTime;
+
+        if (rate > spawnCoolTime)
+        {
+            rate = 0f;
+            SpawnItem(Random.Range(0, item.Count));
+        }
     }
 
-
-    public void CallSapwnItem(int num)
+    public void CallSpawnItem(int num)
     {
         SpawnItem(num);
     }
