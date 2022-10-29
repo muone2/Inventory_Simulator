@@ -8,75 +8,36 @@ public class PlayerBrain : MonoBehaviour
     [SerializeField] Rigidbody p_rigid;
     [SerializeField] PlayerMovement playerMovement;
     [SerializeField] Inventory inventory;
-    [SerializeField] GameObject e;
 
-    [SerializeField] float vertical = 0.0f;
-    [SerializeField] float horizontal = 0.0f;
-    [SerializeField] float jump = 0.0f;
-    [SerializeField] float mouse = 0.0f;
+    [SerializeField] InputChecker inputChecker;
+    [SerializeField] float maxDistanceToTargetObj = 10f;
+
 
     [SerializeField] Vector3 playerFrontVec;
-
+    [SerializeField] float distanceToTargetHitPoint;
+    [SerializeField] Vector3 hitPoint;
+    [SerializeField] GameObject targetObj;
 
     private void Update()
     {
-        CheckInput();
         CheckPlayerFront();
         SeeItemGet();
+        SetTargetObjInfo();
+    }
 
+    public Vector3 GetTargethitPoint()
+    {
+        return hitPoint;
+    }
 
-        if (Input.GetMouseButton(0))
-        {
-            GameObject tmpobj = GetClickObj();
-            if (tmpobj != null)
-                Debug.Log(tmpobj.name);
-            else
-                Debug.Log("null");
-        }
+    public GameObject GetTargetObj()
+    {
+        return targetObj;
     }
 
     private void FixedUpdate()
     {
         MovePlayer();
-    }
-
-    private void CheckInput()
-    {
-        horizontal = Input.GetAxis("Horizontal");
-        vertical = Input.GetAxis("Vertical");
-        jump = Input.GetAxis("Jump");
-        mouse = Input.GetAxis("Fire1");
-    }
-
-
-    private GameObject GetClickObj()
-    {
-            RaycastHit hit;
-            Vector3 middlePoint = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Mathf.Abs(Camera.main.transform.position.z)));
-            Vector3 startPoint = Camera.main.transform.position;
-        Instantiate(e, middlePoint, Quaternion.Euler(Vector3.zero));
-
-        if (Physics.Raycast(startPoint, middlePoint - startPoint, out hit))
-            {
-               // Debug.Log("hit point : " + hit.point + ", distance : " + hit.distance + ", name : " + hit.collider.name);
-                Debug.DrawRay(startPoint, (middlePoint - startPoint) * hit.distance, Color.red);
-                return hit.collider.gameObject;
-            }
-            else
-            {
-              //  Debug.DrawRay(startPoint, (middlePoint - startPoint) * 1000f, Color.red);
-              //  Debug.Log("no");
-                return null;
-            }
-
-
-
-            //  Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, -Camera.main.transform.position.z));
-            // Instantiate(e, point, Quaternion.Euler(Vector3.zero));
-        
-        // Debug.Log(Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, -Camera.main.transform.position.z)));
-
-
     }
 
     private void CheckPlayerFront()
@@ -86,14 +47,37 @@ public class PlayerBrain : MonoBehaviour
 
     private void MovePlayer()
     {
-        playerMovement.CallMove(playerFrontVec, vertical, horizontal, p_rigid);
+        playerMovement.CallMove(playerFrontVec, inputChecker.GetVertical(), inputChecker.GetHorizontal(), p_rigid);
     }
 
-    private void SeeItemGet()
+    private void SeeItemGet()//아이템 연출을 보면서 멈추게 할 생각이고, 지금은 멈추는 것만 됨
     {
-        if(jump>=0.5f)
+        if (inputChecker.GetJump() >= 0.1f)
             playerMovement.changeMoveBool(false);
         else
             playerMovement.changeMoveBool(true);
+    }
+
+    private void SetTargetObjInfo()
+    {
+        RaycastHit hit = inputChecker.GetHitInfo();
+        if (hit.collider != null)
+            targetObj = hit.collider.gameObject; //없으면 null이다.
+        else
+            targetObj = null;
+
+        if (targetObj != null)
+        {
+            hitPoint = hit.point;
+
+            distanceToTargetHitPoint = (hitPoint - player.transform.position).magnitude;
+            if (maxDistanceToTargetObj < distanceToTargetHitPoint)
+            {
+                distanceToTargetHitPoint = -1; //너무 멀리 있으면 없는 거 취급
+                targetObj = null;
+            }
+        }
+        else
+            distanceToTargetHitPoint = -1; //거리가 음수일 수는 없다.
     }
 }

@@ -13,6 +13,7 @@ public class PlayerMovement : MonoBehaviour
     {
         moveBool = a;
     }
+
     public void CallMove(Vector3 front, float vertical, float horizontal, Rigidbody rigid) {
         if (moveBool == true)
         {
