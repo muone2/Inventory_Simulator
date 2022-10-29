@@ -48,14 +48,21 @@ public class PlayerBrain : MonoBehaviour
     private void MovePlayer()
     {
         playerMovement.CallMove(playerFrontVec, inputChecker.GetVertical(), inputChecker.GetHorizontal(), p_rigid);
+        if (inputChecker.GetJump() == true)
+        {
+            playerMovement.CallJump(p_rigid);
+            inputChecker.ChangeIsCanJumpTrue();
+        }
     }
 
     private void SeeItemGet()//아이템 연출을 보면서 멈추게 할 생각이고, 지금은 멈추는 것만 됨
     {
+        /*
         if (inputChecker.GetJump() >= 0.1f)
             playerMovement.changeMoveBool(false);
         else
             playerMovement.changeMoveBool(true);
+    */
     }
 
     private void SetTargetObjInfo()

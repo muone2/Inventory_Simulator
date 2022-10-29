@@ -8,7 +8,12 @@ public class InputChecker : MonoBehaviour
 
     [SerializeField] float vertical = 0.0f;
     [SerializeField] float horizontal = 0.0f;
-    [SerializeField] float jump = 0.0f;
+    [SerializeField] bool jump = false; //점프 도중인지 판단. (점프 도중이라면 true, 아니면 false, 점프가 끝나면 다시 false로 바뀜)
+    //아니지... 이 스크립트는 점프 키에 대한 입력만 관리한다. 즉, 딱 한 순간만 들어갔다가 다시 꺼져야한다.
+    //그렇지만 점프 키의 입력을 받을 것인지에 대한 것은 얘가 책임을 져야하지 않을까?
+    //음... 그럼 이렇게 제어장치를 하나 더 두는 건 어떨까.
+    [SerializeField] bool isCanJump = true;
+
     [SerializeField] float mouse = 0.0f;
 
     [SerializeField] RaycastHit hit;
@@ -24,8 +29,8 @@ public class InputChecker : MonoBehaviour
     void Update()
     {
         CheckInput();
-
         ShotRay();
+
         /*
         if (Input.GetMouseButton(0))
         {
@@ -46,18 +51,33 @@ public class InputChecker : MonoBehaviour
     {
         return horizontal;
     }
-    public float GetJump()
+    public bool GetJump()
     {
         return jump;
     }
+
+    public void ChangeIsCanJumpTrue()
+    {
+        isCanJump = true;
+        jump = false;
+    }
+
 
     private void CheckInput()
     {
         horizontal = Input.GetAxis("Horizontal");
         vertical = Input.GetAxis("Vertical");
-        jump = Input.GetAxis("Jump");
         mouse = Input.GetAxis("Fire1");
+
+        if (Input.GetButtonDown("Jump") && isCanJump == true)
+        {
+            jump = true;
+            isCanJump = false;
+        }
     }
+
+
+
 
     public RaycastHit GetHitInfo()
     {
