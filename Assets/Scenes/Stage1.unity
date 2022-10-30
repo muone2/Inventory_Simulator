@@ -1010,7 +1010,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 20
   turnSpeed: 3
-  moveBool: 1
+  JumpPower: 5
 --- !u!114 &194904109
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1027,12 +1027,13 @@ MonoBehaviour:
   p_rigid: {fileID: 194904107}
   playerMovement: {fileID: 194904108}
   inventory: {fileID: 1380228955}
-  inputChecker: {fileID: 413238026}
+  uiManager: {fileID: 463264983}
   maxDistanceToTargetObj: 10
+  CheckOnGroundRayLength: 0.6
   playerFrontVec: {x: 0, y: 0, z: 0}
-  distanceToTargetHitPoint: 0
-  hitPoint: {x: 0, y: 0, z: 0}
   targetObj: {fileID: 0}
+  hitPoint: {x: 0, y: 0, z: 0}
+  distanceToTargetHitPoint: 0
 --- !u!1 &225332977
 GameObject:
   m_ObjectHideFlags: 0
@@ -1398,11 +1399,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2a400c10bbc66042ae3306b1fafa59c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tmpObj: {fileID: 3772740936091269515, guid: 7af4dd0433e4b7844b2f907507cf935f, type: 3}
+  playerBrain: {fileID: 194904109}
   vertical: 0
   horizontal: 0
-  jump: 0
-  mouse: 0
+  JumpOn: 0
+  ClickOn: 0
 --- !u!4 &413238027
 Transform:
   m_ObjectHideFlags: 0
@@ -1530,7 +1531,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ceab380f1284c44a88c2c1731a7140e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerBrain: {fileID: 194904109}
   mouseItemName: {fileID: 1690029266}
 --- !u!114 &463264984
 MonoBehaviour:
@@ -2577,8 +2577,7 @@ MonoBehaviour:
   - {fileID: 880691352}
   - {fileID: 911771693}
   - {fileID: 1327421706}
-  a: {fileID: 1380228955}
-  rate: 0
+  spawnRate: 0
   spawnCoolTime: 500
 --- !u!4 &989330640
 Transform:

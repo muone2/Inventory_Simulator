@@ -6,38 +6,42 @@ public class PlayerBrain : MonoBehaviour
 {
     [SerializeField] GameObject player;
     [SerializeField] Rigidbody p_rigid;
+
     [SerializeField] PlayerMovement playerMovement;
     [SerializeField] Inventory inventory;
+    [SerializeField] UIManager uiManager;
 
-    [SerializeField] InputChecker inputChecker;
     [SerializeField] float maxDistanceToTargetObj = 10f;
-
+    [SerializeField] float CheckOnGroundRayLength = 0.6f; //1*1*1큐브 기준
 
     [SerializeField] Vector3 playerFrontVec;
-    [SerializeField] float distanceToTargetHitPoint;
-    [SerializeField] Vector3 hitPoint;
     [SerializeField] GameObject targetObj;
+    [SerializeField] Vector3 hitPoint;
+    [SerializeField] float distanceToTargetHitPoint;
 
     private void Update()
     {
+        Debug.DrawRay(player.transform.position, Vector3.down * CheckOnGroundRayLength, Color.red);
+        //아래로 쏘는 디버그용 레이. 땅에 아슬하게 닿는 길이를 시각적으로 확인하기 위함
+
         CheckPlayerFront();
-        SeeItemGet();
-        SetTargetObjInfo();
     }
 
-    public Vector3 GetTargethitPoint()
+    public void JumpPlayer()
     {
-        return hitPoint;
+        CheckOnGroundAndJump();
     }
-
-    public GameObject GetTargetObj()
+    public void WalkPlayer(float vertical)
     {
-        return targetObj;
+        WalkFront(vertical);
     }
-
-    private void FixedUpdate()
+    public void TurnPlayer(float horizontal)
     {
-        MovePlayer();
+        TurnSide(horizontal);
+    }
+    public void SetTarget(RaycastHit hit)
+    {
+        SetTargetObjInfo(hit);
     }
 
     private void CheckPlayerFront()
@@ -45,46 +49,44 @@ public class PlayerBrain : MonoBehaviour
         playerFrontVec = player.transform.forward;
     }
 
-    private void MovePlayer()
+    private void WalkFront(float vertical)
     {
-        playerMovement.CallMove(playerFrontVec, inputChecker.GetVertical(), inputChecker.GetHorizontal(), p_rigid);
-        if (inputChecker.GetJump() == true)
+        playerMovement.Walk(playerFrontVec, vertical, p_rigid);
+    }
+    private void TurnSide(float horizontal)
+    {
+        playerMovement.Turn(horizontal, p_rigid);
+    }
+    private void CheckOnGroundAndJump()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(player.transform.position, Vector3.down, out hit, CheckOnGroundRayLength))
         {
-            playerMovement.CallJump(p_rigid);
-            inputChecker.ChangeIsCanJumpTrue();
+            //   Debug.Log(hit.collider.name);
+            playerMovement.Jump(p_rigid);
         }
     }
-
-    private void SeeItemGet()//아이템 연출을 보면서 멈추게 할 생각이고, 지금은 멈추는 것만 됨
+    private void SetTargetObjInfo(RaycastHit hit)
     {
-        /*
-        if (inputChecker.GetJump() >= 0.1f)
-            playerMovement.changeMoveBool(false);
-        else
-            playerMovement.changeMoveBool(true);
-    */
-    }
-
-    private void SetTargetObjInfo()
-    {
-        RaycastHit hit = inputChecker.GetHitInfo();
         if (hit.collider != null)
-            targetObj = hit.collider.gameObject; //없으면 null이다.
-        else
-            targetObj = null;
-
-        if (targetObj != null)
         {
             hitPoint = hit.point;
-
             distanceToTargetHitPoint = (hitPoint - player.transform.position).magnitude;
-            if (maxDistanceToTargetObj < distanceToTargetHitPoint)
-            {
-                distanceToTargetHitPoint = -1; //너무 멀리 있으면 없는 거 취급
+
+            if (maxDistanceToTargetObj > distanceToTargetHitPoint)
+                targetObj = hit.collider.gameObject;
+            else
                 targetObj = null;
-            }
         }
         else
-            distanceToTargetHitPoint = -1; //거리가 음수일 수는 없다.
+        {
+            distanceToTargetHitPoint = -1;
+            targetObj = null;
+        }
+
+        if(targetObj != null)
+            uiManager.ShowItemName(targetObj.name, hitPoint);
+        else
+            uiManager.ShowItemNameNull();
     }
 }

@@ -11,8 +11,8 @@ public class Inventory : MonoBehaviour
     {
         if (item.GetComponent<ItemInfo>() != null)
         {
-            int target = CheckItemInInventory(item.GetComponent<ItemInfo>().GetItemNum());
-            PutItemInInventory(target, item);
+            int targetInventoryNum = CheckItemInInventory(item.GetComponent<ItemInfo>().GetItemNum());
+            PutItemInInventory(targetInventoryNum, item); // 해당 칸에 해당 아이템 넣음
         }
     }
 
@@ -25,7 +25,7 @@ public class Inventory : MonoBehaviour
                 return i;
             }
         }
-        //아이템이 가방에 없으면
+        //아이템이 가방에 없으면 빈 공간을 찾음
         return CheckInventoryNullNum();
     }
 
@@ -46,7 +46,7 @@ public class Inventory : MonoBehaviour
         if (target >= 0 && ListInInventory[target] != null)
         {
             ListInInventory[target].AddItemCount(item.GetComponent<ItemInfo>().GetItemCount()); //새로 들어온 아이템의 개수만큼 원래 있던 거에서 늘이기만 한다.
-            Destroy(item); //풀을 쓰는 게 좋지만 일단 삭제하자. 배고프다.
+            Destroy(item);
         }
         else if (target >= 0 && ListInInventory[target] == null)
         {

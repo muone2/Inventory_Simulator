@@ -7,26 +7,29 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] float moveSpeed = 10.0f;
     [SerializeField] float turnSpeed = 5.0f;
-    [SerializeField] bool moveBool = true;
+    [SerializeField] float JumpPower = 5.0f;
 
-    public void changeMoveBool(bool a)
+    public void Stop(Rigidbody rigid)
     {
-        moveBool = a;
+        //만들 예정
     }
 
-    public void CallMove(Vector3 front, float vertical, float horizontal, Rigidbody rigid) {
-        if (moveBool == true) //이건 저쪽에서 봐야하지 않을까. 명령을 내렸지만 다리가 말을 안 듣는게 아니라, 명령을 애초에 안 내려야지.
-        {
-            Walk(front, vertical, rigid);
-            Turn(horizontal);
-        }
-    }
-    public void CallJump(Rigidbody rigid)
+    public void Walk(Vector3 front, float vertical, Rigidbody rigid)
     {
-        Jump(rigid);
+        AddForceFront(front, vertical, rigid);
     }
 
-    private void Walk(Vector3 frontVec, float verticalValue, Rigidbody p_rigid)
+    public void Turn(float horizontal, Rigidbody rigid)
+    {
+        AddForceSpin(horizontal, rigid);
+    }
+
+    public void Jump(Rigidbody rigid)
+    {
+        AddForceUp(rigid);
+    }
+
+    private void AddForceFront(Vector3 frontVec, float verticalValue, Rigidbody p_rigid)
     {
         Vector3 r = frontVec * verticalValue * moveSpeed;
         r.y = p_rigid.velocity.y;
@@ -34,14 +37,14 @@ public class PlayerMovement : MonoBehaviour
         p_rigid.velocity = r;
     }
 
-    private void Turn(float horizontalValue)
+    private void AddForceSpin(float horizontalValue, Rigidbody p_rigid)
     {
         transform.Rotate(0, horizontalValue * turnSpeed, 0);
     }
 
-    private void Jump(Rigidbody p_rigid)
+    private void AddForceUp(Rigidbody p_rigid)
     {
-        Vector3 jumpVelocity = Vector3.up * Mathf.Sqrt(5f * -Physics.gravity.y);
+        Vector3 jumpVelocity = Vector3.up * Mathf.Sqrt(JumpPower * -Physics.gravity.y);
         p_rigid.AddForce(jumpVelocity, ForceMode.Impulse);
     }
 }
