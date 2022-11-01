@@ -19,6 +19,8 @@ public class PlayerBrain : MonoBehaviour
     [SerializeField] Vector3 hitPoint;
     [SerializeField] float distanceToTargetHitPoint;
 
+    [SerializeField] bool playerState = true;
+
     private void Update()
     {
         Debug.DrawRay(player.transform.position, Vector3.down * CheckOnGroundRayLength, Color.red);
@@ -29,19 +31,33 @@ public class PlayerBrain : MonoBehaviour
 
     public void JumpPlayer()
     {
-        CheckOnGroundAndJump();
+        if (playerState == true)
+            CheckOnGroundAndJump();
     }
     public void WalkPlayer(float vertical)
     {
-        WalkFront(vertical);
+        if (playerState == true)
+            WalkFront(vertical);
     }
     public void TurnPlayer(float horizontal)
     {
-        TurnSide(horizontal);
+        if (playerState == true)
+            TurnSide(horizontal);
     }
     public void SetTarget(RaycastHit hit)
     {
-        SetTargetObjInfo(hit);
+        if(playerState == true)
+            SetTargetObjInfo(hit);
+    }
+
+    public void PlayerStop()
+    {
+        SetPlayerState(false);
+        SetMoveStopAndTargetNull();
+    }
+    public void PlayerStopEnd()
+    {
+        SetPlayerState(true);
     }
 
     private void CheckPlayerFront()
@@ -88,5 +104,22 @@ public class PlayerBrain : MonoBehaviour
             uiManager.ShowItemName(targetObj.name, hitPoint);
         else
             uiManager.ShowItemNameNull();
+    }
+    private void SetPlayerState(bool OnOff)
+    {
+        if (OnOff == false)
+            playerState = false;
+        else
+            playerState = true;
+    }
+    private void SetMoveStopAndTargetNull()
+    {
+        //움직임을 멈춰야함.
+        //이동 코드에서 호리젠탈과 버티컬 등을 0으로 넘겨주면 멈출듯
+        TurnSide(0);
+        WalkFront(0);
+        //점프하는 도중에 멈추니까 그자리에서 멈추고 공중으로 마저 솟아오르는, 이상한 상태가 되었다(...)
+
+        uiManager.ShowItemNameNull();
     }
 }

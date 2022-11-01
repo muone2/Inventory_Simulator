@@ -5,7 +5,10 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
+    [SerializeField] PlayerBrain playerBrain;
+
     [SerializeField] Text mouseItemName;
+    [SerializeField] GameObject inventoryUI;
 
     public void ShowItemName(string targetName, Vector3 pos)
     {
@@ -23,4 +26,16 @@ public class UIManager : MonoBehaviour
 
          //  Debug.Log(mouseItemName.transform.position);
     }
+
+    public void OpenInventoryUI()
+    {
+        inventoryUI.SetActive(true);
+        playerBrain.PlayerStop();
+    }
+    public void CloseInventoryUI()
+    {
+        inventoryUI.SetActive(false);
+        playerBrain.PlayerStopEnd();
+    }
+
 }
