@@ -1,11 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class Inventory : MonoBehaviour
 {
-    [SerializeField] List<ItemInfo> ListInInventory = new List<ItemInfo>(); //40칸 미리 만들어서 시작하자. 일단 거의 null이겠지만.
-    [SerializeField] List<int> Count = new List<int>();
+    [SerializeField] int boxSpaceCount = 5;
+    [SerializeField] GameObject itemInfoTextPanel;
+    [SerializeField] Text itemInfoText;
+    [SerializeField] List<GameObject> ItemUI; //각 숫자에 서로 대응되고 있다?
+
+    [SerializeField] List<ItemInfo> ListInInventory;
+
+
+
+
+    [SerializeField] GameObject ItemUIPrefeb;
 
     public void GetItem(GameObject item)
     {
@@ -15,6 +26,62 @@ public class Inventory : MonoBehaviour
             PutItemInInventory(targetInventoryNum, item); // 해당 칸에 해당 아이템 넣음
         }
     }
+
+    public void Start()
+    {
+        ListInInventory.Clear();
+
+        for (int i = 0; i < ItemUI.Count; i++)
+            ItemUI[i].SetActive(false);
+
+        for (int i = 0; i < boxSpaceCount; i++)
+        {
+            ListInInventory.Add(null); 
+            ItemUI[i].SetActive(true);
+        }
+    }
+
+    public void SetInventoryUI()
+    {
+        for (int i = 0; i < ListInInventory.Count; i++)
+        {
+            if (ListInInventory[i] != null)
+                ItemUI[i].GetComponentInChildren<Text>().text =
+                        ListInInventory[i].GetItemNum() + "번 item" + System.Environment.NewLine + System.Environment.NewLine + "   x" + ListInInventory[i].GetItemCount();
+            else
+                ItemUI[i].GetComponentInChildren<Text>().text = null;
+        }
+    }
+
+
+    public void OpenInventoryInfoUI()
+    {
+        itemInfoTextPanel.SetActive(true);
+
+        GameObject g = EventSystem.current.currentSelectedGameObject;
+        int target = 0;
+        for (int i = 0; i < ItemUI.Count; i++)
+        {
+            if (ItemUI[i] == g)
+                target = i; //내가 누른 건 target번째 칸이다.
+        }
+
+        if (ListInInventory[target] == null)
+            itemInfoText.text = null;
+        else
+            itemInfoText.text = "name : " + ListInInventory[target].GetItemNum() + System.Environment.NewLine +
+                "Count : " + ListInInventory[target].GetItemCount();
+    }
+
+    public void CloseInventoryInfoUI()
+    {
+        itemInfoTextPanel.SetActive(false);
+    }
+
+    //  public void ShowInventoryItem(List<ItemInfo> itemlist)
+    // {
+
+    // }
 
     private int CheckItemInInventory(int num)
     {

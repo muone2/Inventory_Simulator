@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class UIManager : MonoBehaviour
 {
     [SerializeField] PlayerBrain playerBrain;
+    [SerializeField] Inventory inventory;
 
     [SerializeField] Text mouseItemName;
     [SerializeField] GameObject inventoryUI;
@@ -31,6 +32,7 @@ public class UIManager : MonoBehaviour
     {
         inventoryUI.SetActive(true);
         playerBrain.PlayerStop();
+        inventory.SetInventoryUI();
     }
     public void CloseInventoryUI()
     {
